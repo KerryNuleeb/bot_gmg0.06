@@ -9,22 +9,22 @@ import create_post
 import log
 import time
 
-token = log.get_token()
-vk_session = vk_api.VkApi(token=token)
 
-session_api = vk_session.get_api()
-longpoll = VkLongPoll(vk_session)
-vk_session.api_version = 5.103
+def main():
+    token = log.get_token()
+    vk_session = vk_api.VkApi(token=token)
 
+    session_api = vk_session.get_api()
+    longpoll = VkLongPoll(vk_session)
+    vk_session.api_version = 5.103
 
-def send_message(vk_session, id_type, id, message=None, attachment=None, keyboard=None):
-    vk_session.method('messages.send',
-                      {id_type: id, 'message': message, 'random_id': random.randint(-2147483648, 2147483648),
-                       "attachment": attachment, 'keyboard': keyboard})
+    def send_message(vk_session, id_type, id, message=None, attachment=None, keyboard=None):
+        vk_session.method('messages.send',
+                          {id_type: id, 'message': message, 'random_id': random.randint(-2147483648, 2147483648),
+                           "attachment": attachment, 'keyboard': keyboard})
 
+    while True:
 
-while True:
-    try:
         for event in longpoll.listen():
             if event.type == VkEventType.MESSAGE_NEW:
                 print("Текст сообщения: " + str(event.text))
@@ -77,7 +77,12 @@ while True:
                     send_message(vk_session, 'user_id', event.user_id, message='https://vk.com/knuleeb')
                 elif response.find('пока') != -1 and not (event.from_me):
                     send_message(vk_session, 'user_id', event.user_id, message='Бывай')
-    except:
-        print('Вкудач перегружается!!!')
-        time.sleep('100')
+
+
+while True:
+    try:
+        main()
+    except Exception:
+        print('Вкудач перегружается')
+        time.sleep(100)
         continue
